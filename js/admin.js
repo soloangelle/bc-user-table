@@ -71,12 +71,15 @@ const users = [{
 const tableHTML = document.getElementById("table-container");
 //Obtener el body de la tabla
 const tableBodyHTML = document.getElementById("table-body");
+const totalHTML = document.getElementById('total');
 
 function renderUsers(arrayUsers) {
   //Cada vez que llamamos a la funcion , primer limpiamos el bady de la tabla y volvemosa pintar
   tableBodyHTML.innerHTML = '';
-  arrayUsers.forEach((user) => {
+  let total = 0;
+  arrayUsers.forEach((user, index) => {
 
+    total += user.age;
     tableBodyHTML.innerHTML += `<tr>
     <td class="user-image">
         <img src="${user.image}" alt="${user.fullname} avatar">
@@ -84,12 +87,47 @@ function renderUsers(arrayUsers) {
     <td class="user-name">${user.fullname}</td>
     <td class="user-email">${user.email}</td>
     <td class="user-location">${user.location}</td>
-    <td class="user-actions">@mdo</td>
+    <td class="user-actions">
+       <button class="btn btn-danger btn-sm" onclick="deleteUser('${user.id}')"><i class="fa-solid fa-trash-can"></i></button>
+       <button class="btn btn-primary btn-sm"><i class="fa-solid fa-pen"></i></button>
+    </td>
 </tr>`
   })
+
+  totalHTML.innerHTML = `$ ${total}`;
 }
 
 renderUsers(users);
+
+//Funcion para eliminar usuario
+function deleteUser(idUser) {
+
+  //Deberia buscar el indce de ese elemento en el array
+  const indice = users.findIndex((usr) => {
+    //Voy a checkear cuando el idIser que es la persona que quiero borrar coincida con el id de mi usr
+    if (idUser === usr.id) {
+      return true;
+    }
+  })
+  // Contemplar si el usuario no existia
+  if (indice === -1) {
+    Swal.fire({
+      title: "Error al borrar",
+      text: "No se pudo borrar el usuario",
+      icon: "error",
+      timer: 1500,
+    })
+    //alert("El usuario no se encontró");
+    return  // es para romper, salir de la funcion
+  }
+  //Deberia eliminar ese elemento del array
+  users.splice(indice,1);
+
+  //Volver a pintar la tabla
+  renderUsers(users);
+
+  console.log(`Borrar usuario ${idUser}`);
+}
 
 function inputSearch(evt) {
   //Tenemos que tomar lo que la persona ha escrito en el input
@@ -135,10 +173,10 @@ function sortDesc() {
 
   const collator = new Intl.Collator(undefined, { sensitivity: 'base' })
 
-   users.sort((a, b) => {
+  users.sort((a, b) => {
 
-     // #Metodo 2
-  return collator.compare(b.fullname, a.fullname);
+    // #Metodo 2
+    return collator.compare(b.fullname, a.fullname);
 
     // #Metodo 1
     //   if(a.fullname.toLowerCase() < b.fullname.toLowerCase()){
@@ -151,3 +189,65 @@ function sortDesc() {
   })
   renderUsers(users);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
