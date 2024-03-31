@@ -75,6 +75,11 @@ const totalHTML = document.getElementById('total');
 //Obtener el formulario del HTML
 const userFormHTML = document.querySelector('#user-form');
 
+let userButtonsEdit;
+renderUsers(users);
+
+
+
 
 userFormHTML.addEventListener("submit", (evento) => {
   evento.preventDefault(); // Prevenir el comportamiento que tiene por defecto un formulario de enviarse y recargar a página
@@ -97,9 +102,13 @@ userFormHTML.addEventListener("submit", (evento) => {
   }
   
   users.push(nuevoUsuario);
-  renderUsers(users);
+ 
 
-  console.log(el["password-repeat"].value);
+  //Limpiamos los input del formulario
+ userFormHTML.reset(); 
+
+ //Hacemos foco en el primer input del formulario
+ el.fullname.focus();
 
 })
 
@@ -120,14 +129,62 @@ function renderUsers(arrayUsers) {
     <td class="user-location">${user.location}</td>
     <td class="user-actions">
        <button class="btn btn-danger btn-sm" onclick="deleteUser('${user.id}')"><i class="fa-solid fa-trash-can"></i></button>
-       <button class="btn btn-primary btn-sm"><i class="fa-solid fa-pen"></i></button>
+       <button class="btn btn-primary btn-sm" data-edit="${user.id}"><i class="fa-solid fa-pen"></i></button>
     </td>
 </tr>`
   })
 
   totalHTML.innerHTML = `$ ${total}`;
+  // Una vez que pintamos la tabla obtenemos todos los botones con el atributo data-edit y se los asignamos a la variable userButtonsEdit
+  updateEditButtons();
+  
 }
-renderUsers(users);
+
+function updateEditButtons(){ 
+  userButtonsEdit = document.querySelectorAll('button[data-edit]');
+  
+  userButtonsEdit.forEach((btn) => {
+    
+    btn.addEventListener('click', (evt) =>{
+
+      const id = evt.currentTarget.dataset.edit; //El botón que se clicleo el edit
+      
+      //Buscar el usuario y obtenerlo
+      //Rellenar el formulario
+      completeUserForm(id);
+
+    })
+  })
+}
+
+function completeUserForm(idUser){
+
+  console.log(`Complete FORM ${idUser}`);  
+  //Buscar el usuarui y obtenerlo
+  const user = users.find((usr) =>{
+     if(usr.id === idUser){
+      return true;
+     }
+    
+  })
+  // Considero el caso de no haber obtenido un usuario y corto la funcion pero ademas aviso al usuario
+  if(!user){
+    alert("No se encontró el usuario")
+    return
+  }
+  // Rellenar el formulario
+  const el = userFormHTML.elements;
+
+  el.fullname.value = user.fullname;
+  el.email.value = user.email;
+  el.password.value = user.password;
+  el["password-repeat"].value = user.password;
+  el.location.value = user.location;
+  el.image.value = user.image;  
+  el.active.checked = user.active;
+  el.bornDate.valueAsNumber = user.bornDate;
+
+}
 
 //Funcion para eliminar usuario
 function deleteUser(idUser) {
