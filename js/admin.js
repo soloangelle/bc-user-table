@@ -72,6 +72,37 @@ const tableHTML = document.getElementById("table-container");
 //Obtener el body de la tabla
 const tableBodyHTML = document.getElementById("table-body");
 const totalHTML = document.getElementById('total');
+//Obtener el formulario del HTML
+const userFormHTML = document.querySelector('#user-form');
+
+
+userFormHTML.addEventListener("submit", (evento) => {
+  evento.preventDefault(); // Prevenir el comportamiento que tiene por defecto un formulario de enviarse y recargar a página
+  const el = evento.target.elements;
+
+  if(el["password-repeat"].value !== el.password.value){
+    Swal.fire("Error", "Las constraseñas no coinciden", "warning")
+    return
+  }
+  const nuevoUsuario = {
+    id: crypto.randomUUID(),
+    fullname: el.fullname.value,
+    email: el.email.value,
+    password: el.password.value,
+    location: el.location.value,
+    image: el.image.value,
+    bornDate: new Date(el.bornDate.value).getTime(),// transformo en un timestamp
+    active: el.active.checked,
+    // age: +el.age.value,  // esto se transforma en numero o valueAsNumber
+  }
+  
+  users.push(nuevoUsuario);
+  renderUsers(users);
+
+  console.log(el["password-repeat"].value);
+
+})
+
 
 function renderUsers(arrayUsers) {
   //Cada vez que llamamos a la funcion , primer limpiamos el bady de la tabla y volvemosa pintar
@@ -96,7 +127,6 @@ function renderUsers(arrayUsers) {
 
   totalHTML.innerHTML = `$ ${total}`;
 }
-
 renderUsers(users);
 
 //Funcion para eliminar usuario
@@ -121,7 +151,7 @@ function deleteUser(idUser) {
     return  // es para romper, salir de la funcion
   }
   //Deberia eliminar ese elemento del array
-  users.splice(indice,1);
+  users.splice(indice, 1);
 
   //Volver a pintar la tabla
   renderUsers(users);

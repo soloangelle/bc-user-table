@@ -21,3 +21,8 @@
     text-align: right;
     font-size: 1.25rem;
 }
+
+.user-form{
+    max-width: 400px;
+    margin: 0 auto;
+}
