@@ -68,6 +68,8 @@ const users = [{
 },
 ];
 
+let isEditing;
+
 const tableHTML = document.getElementById("table-container");
 //Obtener el body de la tabla
 const tableBodyHTML = document.getElementById("table-body");
@@ -82,6 +84,7 @@ renderUsers(users);
 
 
 userFormHTML.addEventListener("submit", (evento) => {
+
   evento.preventDefault(); // Prevenir el comportamiento que tiene por defecto un formulario de enviarse y recargar a página
   const el = evento.target.elements;
 
@@ -101,9 +104,21 @@ userFormHTML.addEventListener("submit", (evento) => {
     // age: +el.age.value,  // esto se transforma en numero o valueAsNumber
   }
   
-  users.push(nuevoUsuario);
- 
+    //Debo establcer un condicional para saber si tengo que pushear o agregar un elemento al array (Un nuevo user) o si estoy editanto y tengo que buscsar un nuevo usuario y reemplazarlo
+    if(isEditing){
+      // Buscar el usuario y reemplazarlo
+      const userIndex = users.findIndex(user => {
+        return user.id === isEditing;
+      })
 
+      users[userIndex] = nuevoUsuario;
+    }
+    else{
+      //Agregar el usuario ya que es un usar nuevo
+      users.push(nuevoUsuario);
+    }    
+
+    renderUsers(users);
   //Limpiamos los input del formulario
  userFormHTML.reset(); 
 
@@ -159,6 +174,8 @@ function updateEditButtons(){
 
 function completeUserForm(idUser){
 
+  isEditing = idUser;
+
   console.log(`Complete FORM ${idUser}`);  
   //Buscar el usuarui y obtenerlo
   const user = users.find((usr) =>{
@@ -183,6 +200,16 @@ function completeUserForm(idUser){
   el.image.value = user.image;  
   el.active.checked = user.active;
   el.bornDate.valueAsNumber = user.bornDate;
+  //Obtenfo el botón submit del formulario para cambiar sus estilos y el texto del botón
+  const btnSubmitHTML = userFormHTML.querySelector("button[type='submit']");
+  const formContainerHTML = document.querySelector(".user-form-container");
+
+  formContainerHTML.classList.add("form-edit");
+
+  btnSubmitHTML.classList.remove('btn-primary');
+  btnSubmitHTML.classList.add('btn-success');
+
+  btnSubmitHTML.innerHTML = "Eitar";
 
 }
 

@@ -22,7 +22,11 @@
     font-size: 1.25rem;
 }
 
-.user-form{
+.user-form-container{
     max-width: 400px;
     margin: 0 auto;
+}
+
+.user-form-container.form-edit{
+    background-color:#ecfbc9 !important;
 }
