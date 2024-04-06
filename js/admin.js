@@ -1,3 +1,5 @@
+import { transformTimestampToDate,calculateAge } from "./utils/date.js";
+
 const users = [{
   fullname: 'John Doe',
   age: 30,
@@ -77,10 +79,13 @@ const totalHTML = document.getElementById('total');
 //Obtener el formulario del HTML
 const userFormHTML = document.querySelector('#user-form');
 
+//Obtenemos los elementos del formulario para jugar con sus estulos segun esté editando o agregando un user
+const btnSubmitHTML = userFormHTML.querySelector("button[type='submit']");
+const formContainerHTML = document.querySelector(".user-form-container");
+
+
 let userButtonsEdit;
 renderUsers(users);
-
-
 
 
 userFormHTML.addEventListener("submit", (evento) => {
@@ -90,10 +95,17 @@ userFormHTML.addEventListener("submit", (evento) => {
 
   if(el["password-repeat"].value !== el.password.value){
     Swal.fire("Error", "Las constraseñas no coinciden", "warning")
-    return
+    return //evito que se ejecuten las siguientes líneas si se ingrsó a este if
   }
+
+  // let id;
+  // if(isEditing){
+  //   id=isEditing;
+  // }else{
+  //   id=crypto.randomUUID();
+  // }
   const nuevoUsuario = {
-    id: crypto.randomUUID(),
+    id: isEditing ? isEditing : crypto.randomUUID(),  // cuando una propiedad es igual a la variable no es necesario porner id:id,
     fullname: el.fullname.value,
     email: el.email.value,
     password: el.password.value,
@@ -119,6 +131,15 @@ userFormHTML.addEventListener("submit", (evento) => {
     }    
 
     renderUsers(users);
+   
+    isEditing = undefined;
+    //Formateamos el formulario    
+  formContainerHTML.classList.remove("form-edit");
+
+  btnSubmitHTML.classList.add('btn-primary');
+  btnSubmitHTML.classList.remove('btn-success');
+
+  btnSubmitHTML.innerHTML = "Agregar";
   //Limpiamos los input del formulario
  userFormHTML.reset(); 
 
@@ -142,6 +163,9 @@ function renderUsers(arrayUsers) {
     <td class="user-name">${user.fullname}</td>
     <td class="user-email">${user.email}</td>
     <td class="user-location">${user.location}</td>
+    <td class= "user-date">${transformTimestampToDate(user.bornDate)}<br>
+    <small>${calculateAge(user.bornDate)} </small>
+    </td>
     <td class="user-actions">
        <button class="btn btn-danger btn-sm" onclick="deleteUser('${user.id}')"><i class="fa-solid fa-trash-can"></i></button>
        <button class="btn btn-primary btn-sm" data-edit="${user.id}"><i class="fa-solid fa-pen"></i></button>
@@ -201,15 +225,13 @@ function completeUserForm(idUser){
   el.active.checked = user.active;
   el.bornDate.valueAsNumber = user.bornDate;
   //Obtenfo el botón submit del formulario para cambiar sus estilos y el texto del botón
-  const btnSubmitHTML = userFormHTML.querySelector("button[type='submit']");
-  const formContainerHTML = document.querySelector(".user-form-container");
-
+ 
   formContainerHTML.classList.add("form-edit");
 
   btnSubmitHTML.classList.remove('btn-primary');
   btnSubmitHTML.classList.add('btn-success');
 
-  btnSubmitHTML.innerHTML = "Eitar";
+  btnSubmitHTML.innerHTML = "Editar";
 
 }
 
